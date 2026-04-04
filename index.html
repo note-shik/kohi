@@ -44,6 +44,27 @@
 
     ::selection { background: var(--caramel); color: var(--dark); }
 
+       /* ── CURSOR (desktop only) ── */
+    .cursor, .cursor-ring {
+      display: none;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      .cursor {
+        display: block; width: 10px; height: 10px;
+        background: var(--gold); border-radius: 50%;
+        transition: transform 0.15s ease;
+      }
+      .cursor-ring {
+        display: block; width: 38px; height: 38px;
+        border: 1px solid rgba(200,169,110,0.5); border-radius: 50%;
+        transition: width 0.3s, height 0.3s;
+      }
+    }
+
     a { color: inherit; text-decoration: none; }
 
     /* ── NAVIGATION ── */
@@ -619,6 +640,9 @@
 </head>
 <body>
 
+  <div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
 <!-- Float WhatsApp -->
 <a href="https://wa.me/919064982248?text=Hi%20K%C5%8Dhi!%20I%27d%20like%20to%20know%20more." class="float-wa" target="_blank" aria-label="WhatsApp">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.563 4.14 1.548 5.876L0 24l6.304-1.524A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.79 9.79 0 01-5.028-1.386l-.36-.214-3.742.904.952-3.645-.233-.374A9.757 9.757 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
@@ -884,6 +908,25 @@
 </footer>
 
 <script>
+
+   /* ── Cursor ── */
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursorRing');
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick(){
+      cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+      rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(tick);
+    })();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{ cursor.style.transform='translate(-50%,-50%) scale(2.5)'; ring.style.width='56px'; ring.style.height='56px'; });
+      el.addEventListener('mouseleave',()=>{ cursor.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width='38px'; ring.style.height='38px'; });
+    });
+  }
+  
   /* ── Nav scroll effect ── */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
